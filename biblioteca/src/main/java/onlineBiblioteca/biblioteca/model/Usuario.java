@@ -1,95 +1,79 @@
 package onlineBiblioteca.biblioteca.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.Objects;
 
-@Table(name="usuario")
 @Entity
+@Table(name = "Usuario")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "ID_Usuario")
+    private Long id;
 
-    @Column(name="Email_User", nullable=false)
+    @Column(nullable = false, name = "nome_user")
+    private String nome;
+
+    @Column(nullable = false, name = "endereco_user")
+    private String endereco;
+
+    @Column(nullable = false, name = "email_user")
     private String email;
 
-        
-    @Column(name="Nome_User", nullable=false)
-    private String nome;   
-    
-    @Column(name="CPF_User", nullable=false)
+    @Column(nullable = false, name = "telefone_user")
+    private String telefone;
+
+    @Column(nullable = false, unique = true, name = "cpf_user")
     private String cpf;
 
+    // Relação com TipoUsuario
     @ManyToOne
-    @JoinColumn(
-        name = "fk_Tipo_User_ID_Tipo", //Nome da coluna da tabela usuario
-        referencedColumnName = "ID_Tipo" // coluna referenciada na tabela Tipo_User
-    )
+    @JoinColumn(name = "ID_Tipo")
     private TipoUsuario tipo;
 
+    public Usuario() {}
 
-    public Usuario(int id, String email, String nome, String cpf) {
-        this.id = id;
-        this.email = email;
+    public Usuario(String nome, String endereco, String email, String telefone, String cpf, TipoUsuario tipo) {
         this.nome = nome;
-        this.cpf = cpf;
-    }
-
-    public Usuario(){
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public TipoUsuario getTipo() {
-        return tipo;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    
-    public void setEmail(String email) {
+        this.endereco = endereco;
         this.email = email;
-    }
-
-    
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-
-    public void setCpf(String cpf) {
+        this.telefone = telefone;
         this.cpf = cpf;
-    }
-
-
-    public void setTipo(TipoUsuario tipo) {
         this.tipo = tipo;
-    }    
+    }
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
+    public String getEndereco() { return endereco; }
+    public void setEndereco(String endereco) { this.endereco = endereco; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
+
+    public TipoUsuario getTipo() { return tipo; }
+    public void setTipo(TipoUsuario tipo) { this.tipo = tipo; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
