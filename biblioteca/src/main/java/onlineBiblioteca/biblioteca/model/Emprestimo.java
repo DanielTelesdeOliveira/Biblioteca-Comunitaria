@@ -28,7 +28,10 @@ public class Emprestimo{
     @Column(name="Multa_Emprestimo", nullable=true)
     private double multa;
 
-    
+    //boolean finalizado ou devolvido (?)
+    //Long id usuario -- chave estrangeira para ver quem esta com o livro
+
+    public Emprestimo(){}
 
     public Emprestimo(int id, LocalDate data_emprestimo, LocalDate data_devolucao, LocalDate previsao_devolucao, double multa) {
         this.id = id;
