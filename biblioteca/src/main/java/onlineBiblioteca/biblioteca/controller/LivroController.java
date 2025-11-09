@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/livros")
@@ -16,42 +15,30 @@ public class LivroController {
     @Autowired
     private LivroRepository livroRepository;
 
-    // Cadastrar novo livro
     @PostMapping("/cadastro")
     public Livro cadastrarLivro(@RequestBody Livro livro) {
         return livroRepository.save(livro);
     }
 
-    // Listar todos os livros
     @GetMapping("/lista")
     public List<Livro> listarLivros() {
         return livroRepository.findAll();
     }
 
-    // Buscar por título (recebe título no body)
-    @PostMapping("/buscar")
-    public ResponseEntity<List<Livro>> buscarPorTitulo(@RequestBody Map<String, String> body) {
-        String titulo = body.get("titulo");
-        List<Livro> livros = livroRepository.findByTituloContainingIgnoreCase(titulo);
-
-        if (livros.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(livros);
+    @GetMapping("/buscar")
+    public List<Livro> buscarPorTitulo(@RequestParam String titulo) {
+        return livroRepository.findByTituloContainingIgnoreCase(titulo);
     }
 
-
-    // Deletar livro (passando o título no body)
-    @DeleteMapping("/deletar")
-    public ResponseEntity<String> deletarLivro(@RequestBody Map<String, String> body) {
-        String titulo = body.get("titulo");
-        List<Livro> livros = livroRepository.findByTituloContainingIgnoreCase(titulo);
-
-        if (livros.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        livros.forEach(livroRepository::delete);
-        return ResponseEntity.ok("Livro deletado com sucesso!");
+    // Deletar um livro pelo ID
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<String> deletarLivro(@PathVariable Long id) {
+        return livroRepository.findById(id)
+                .map(livro -> {
+                    livroRepository.delete(livro);
+                    return ResponseEntity.ok("Livro deletado com sucesso!");
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
+
