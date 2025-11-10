@@ -23,7 +23,7 @@ public class UsuarioController {
     }
 
     // ✅ Buscar usuário pelo CPF (passado no body)
-    @PostMapping("/buscar")
+    @GetMapping("/buscar")
     public ResponseEntity<Usuario> buscarPorCpf(@RequestBody Usuario usuario) {
         return usuarioService.buscarPorCpf(usuario.getCpf())
                 .map(ResponseEntity::ok)
