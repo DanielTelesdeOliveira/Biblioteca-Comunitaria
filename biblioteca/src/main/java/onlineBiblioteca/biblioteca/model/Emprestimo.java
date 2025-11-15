@@ -14,7 +14,7 @@ public class Emprestimo{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name="Data_Empre", nullable=true)
     private LocalDate data_emprestimo;
@@ -33,7 +33,7 @@ public class Emprestimo{
 
     public Emprestimo(){}
 
-    public Emprestimo(int id, LocalDate data_emprestimo, LocalDate data_devolucao, LocalDate previsao_devolucao, double multa) {
+    public Emprestimo(Long id, LocalDate data_emprestimo, LocalDate data_devolucao, LocalDate previsao_devolucao, double multa) {
         this.id = id;
         this.data_emprestimo = data_emprestimo;
         this.data_devolucao = data_devolucao;
@@ -41,11 +41,11 @@ public class Emprestimo{
         this.multa = multa;
     }
 
-    public Emprestimo(int id) {
+    public Emprestimo(Long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -65,7 +65,7 @@ public class Emprestimo{
     return multa;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

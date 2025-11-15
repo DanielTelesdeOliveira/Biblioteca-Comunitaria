@@ -18,7 +18,7 @@ public class TipoUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_Tipo")
-    private int id;
+    private Long id;
 
     @Column(name="Nome_Tipo", nullable=false)
     private String nome;
@@ -27,7 +27,7 @@ public class TipoUsuario {
     private ArrayList<Usuario> usuarios = new ArrayList<>();
 
 
-    public TipoUsuario(int id, String nome) {
+    public TipoUsuario(Long id, String nome) {
         this.id = id;
         this.nome = nome;
     }
@@ -36,7 +36,7 @@ public class TipoUsuario {
 
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -48,7 +48,7 @@ public class TipoUsuario {
         return usuarios;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
     this.id = id;
     }
 

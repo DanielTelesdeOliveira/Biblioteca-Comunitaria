@@ -15,7 +15,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name="Email_User", nullable=false)
     private String email;
@@ -29,13 +29,12 @@ public class Usuario {
 
     @ManyToOne
     @JoinColumn(
-        name = "fk_Tipo_User_ID_Tipo", //Nome da coluna da tabela usuario
-        referencedColumnName = "ID_Tipo" // coluna referenciada na tabela Tipo_User
+        name = "fk_tipo_user_id_tipo"
     )
     private TipoUsuario tipo;
 
 
-    public Usuario(int id, String email, String nome, String cpf) {
+    public Usuario(Long id, String email, String nome, String cpf) {
         this.id = id;
         this.email = email;
         this.nome = nome;
@@ -45,7 +44,7 @@ public class Usuario {
     public Usuario(){
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -65,7 +64,7 @@ public class Usuario {
         return tipo;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

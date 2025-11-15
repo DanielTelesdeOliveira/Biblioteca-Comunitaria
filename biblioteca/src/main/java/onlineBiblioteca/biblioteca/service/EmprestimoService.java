@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 import org.hibernate.mapping.List;
 
-import onlineBiblioteca.biblioteca.exception.Emprestimo.dataEmprestimoInvalidaException;
-import onlineBiblioteca.biblioteca.exception.Emprestimo.emprestimoNaoEncontradoException;
+import onlineBiblioteca.biblioteca.exception.Emprestimo.DataEmprestimoInvalidaException;
+import onlineBiblioteca.biblioteca.exception.Emprestimo.EmprestimoNaoEncontradoException;
 import onlineBiblioteca.biblioteca.model.Emprestimo;
 import onlineBiblioteca.biblioteca.repository.EmprestimoRepository;
 
@@ -23,11 +23,11 @@ public class EmprestimoService {
         Emprestimo novoEmprestimo = new Emprestimo();
 
         if(data_emprestimo.isAfter(LocalDate.now())){
-            throw new dataEmprestimoInvalidaException(data_emprestimo);
+            throw new DataEmprestimoInvalidaException(data_emprestimo);
         }
 
         if(data_devolucao.isBefore(data_emprestimo)){
-            throw new dataEmprestimoInvalidaException(data_devolucao);
+            throw new DataEmprestimoInvalidaException(data_devolucao);
         }
 
 
@@ -41,15 +41,15 @@ public class EmprestimoService {
 
     public Emprestimo atualizarEmprestimo(Long emprestimoId, LocalDate data_emprestimo, LocalDate data_devolucao, LocalDate previsao_devolucao, double multa){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(() -> new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(() -> new EmprestimoNaoEncontradoException(emprestimoId));
 
         
         if(data_emprestimo.isAfter(LocalDate.now())){
-            throw new dataEmprestimoInvalidaException(data_emprestimo);
+            throw new DataEmprestimoInvalidaException(data_emprestimo);
         }
 
         if(data_devolucao.isBefore(data_emprestimo)){
-            throw new dataEmprestimoInvalidaException(data_devolucao);
+            throw new DataEmprestimoInvalidaException(data_devolucao);
         }
     
 
@@ -68,7 +68,7 @@ public class EmprestimoService {
 
     public Emprestimo getEmprestimoId(long emprestimoId){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(()->new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(()->new EmprestimoNaoEncontradoException(emprestimoId));
         return empre;
     }   
 
@@ -84,7 +84,7 @@ public class EmprestimoService {
 
     public void deletarEmprestimo(Long emprestimoId){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(()->new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(()->new EmprestimoNaoEncontradoException(emprestimoId));
 
             emprestimoRepository.delete(empre);
 
@@ -93,7 +93,7 @@ public class EmprestimoService {
     public boolean verificarDataDevo(Long emprestimoId){
         boolean expirar = false;
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(() -> new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(() -> new EmprestimoNaoEncontradoException(emprestimoId));
         
        LocalDate data_prevista = empre.getPrevisao_devolucao();
        LocalDate data_devolucao = empre.getData_devolucao();
@@ -114,7 +114,7 @@ public class EmprestimoService {
 
     public double calcularMulta(Long emprestimoId){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(() -> new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(() -> new EmprestimoNaoEncontradoException(emprestimoId));
 
          LocalDate dataDevolutiva = empre.getData_devolucao();
          LocalDate dataPrevisao_Devolucao = empre.getPrevisao_devolucao();
@@ -134,10 +134,10 @@ public class EmprestimoService {
 
     public Emprestimo atualizarRetornoEmprestimo(Long emprestimoId, LocalDate dataDevolutiva){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(() -> new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(() -> new EmprestimoNaoEncontradoException(emprestimoId));
 
         if(dataDevolutiva.isBefore(empre.getData_emprestimo())){
-            throw new dataEmprestimoInvalidaException(dataDevolutiva);
+            throw new DataEmprestimoInvalidaException(dataDevolutiva);
         }
     
             empre.setData_devolucao(dataDevolutiva);
@@ -147,7 +147,7 @@ public class EmprestimoService {
 
     public Emprestimo delegarMulta(Long emprestimoId){
         Emprestimo empre = emprestimoRepository.findById(emprestimoId)
-            .orElseThrow(() -> new emprestimoNaoEncontradoException(emprestimoId));
+            .orElseThrow(() -> new EmprestimoNaoEncontradoException(emprestimoId));
 
         boolean devolucao = verificarDataDevo(emprestimoId);
         double multa = 0.0;

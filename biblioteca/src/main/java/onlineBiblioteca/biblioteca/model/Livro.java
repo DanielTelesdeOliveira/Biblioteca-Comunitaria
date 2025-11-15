@@ -3,6 +3,7 @@ package onlineBiblioteca.biblioteca.model;
 import jakarta.persistence.*;
 import java.util.Objects;
 
+@Table(name="livro")
 @Entity
 public class Livro {
 

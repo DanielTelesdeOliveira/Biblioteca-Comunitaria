@@ -36,8 +36,8 @@ public class EditoraController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deletarEditora(@PathVariable Long id) {
         return editoraRepository.findById(id)
-                .map(genero -> {
-                    editoraRepository.delete(genero);
+                .map(editora -> {
+                    editoraRepository.delete(editora);
                     return ResponseEntity.ok("Editora deletado com sucesso!");
                 })
                 .orElse(ResponseEntity.notFound().build());

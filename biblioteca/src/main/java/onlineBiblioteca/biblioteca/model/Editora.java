@@ -14,13 +14,13 @@ public class Editora {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name="Nome_Editora", nullable=false)
     private String nome;
 
 
-    public Editora(int id, String nome) {
+    public Editora(Long id, String nome) {
         this.id = id;
         this.nome = nome;
     }
@@ -28,7 +28,7 @@ public class Editora {
     public Editora(){
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -36,7 +36,7 @@ public class Editora {
         return nome;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
     this.id = id;
     }
 

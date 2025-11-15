@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Comunitária Online</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --danger: #f97373;
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --card: #020617;
+      --border: #1f2937;
+      --radius-lg: 18px;
+      --radius-full: 999px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1120px;
+      background: rgba(15, 23, 42, 0.88);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      backdrop-filter: blur(18px);
+      padding: 20px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 18px;
+      background: conic-gradient(from 180deg, #22c55e, #0ea5e9, #6366f1, #22c55e);
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+    }
+
+    .title h1 {
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title span.badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: var(--accent);
+      background: rgba(22, 163, 74, 0.1);
+    }
+
+    .title p {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-top: 4px;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 13px;
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #22c55e, #16a34a, #15803d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .user-info span.name {
+      font-size: 12px;
+    }
+
+    .user-info span.role {
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* Navegação */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: inline-flex;
+      background: var(--bg-soft);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.4);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-soft);
+      color: #ecfdf5;
+    }
+
+    .tab-btn.active span.dot {
+      background: var(--accent);
+    }
+
+    .quick-stats {
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .quick-stats span {
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    /* Conteúdo principal */
+    main {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-soft);
+    }
+
+    .filter-select {
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-soft);
+      padding: 7px 12px;
+      font-size: 13px;
+    }
+
+    .primary-btn {
+      border-radius: var(--radius-full);
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s ease;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(34, 197, 94, 0.45);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Cards de livros */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827 0, #020617 55%);
+      border-radius: var(--radius-lg);
+      padding: 12px 12px 10px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.14), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-author {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .badge-status {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .badge-status.disponivel {
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.12);
+    }
+
+    .badge-status.emprestado {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+      background: rgba(248, 113, 113, 0.12);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta span strong {
+      color: var(--text);
+    }
+
+    .card button {
+      border-radius: var(--radius-full);
+      border: none;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .btn-emprestar {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    .btn-devolver {
+      background: rgba(15, 23, 42, 0.9);
+      color: #fecaca;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+
+    /* Empty state */
+    .empty-state {
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(75, 85, 99, 0.9);
+      padding: 16px 14px;
+      font-size: 13px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8));
+      margin-top: 10px;
+    }
+
+    .empty-state strong {
+      color: var(--text);
+    }
+
+    /* Tabela simples (admin) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    thead {
+      background: #020617;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      font-weight: 500;
+      color: var(--text-soft);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .tag.categoria {
+      border-color: rgba(129, 140, 248, 0.7);
+      color: #c7d2fe;
+      background: rgba(79, 70, 229, 0.12);
+    }
+
+    .tag.comunidade {
+      border-color: rgba(56, 189, 248, 0.7);
+      color: #bae6fd;
+      background: rgba(8, 47, 73, 0.9);
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        padding: 16px 14px 18px;
+        border-radius: 22px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .primary-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo-area">
+        <div class="logo">
+          <div class="logo-inner">BC</div>
+        </div>
+        <div class="title">
+          <h1>
+            Biblioteca Comunitária
+            <span class="badge">protótipo front-end</span>
+          </h1>
+          <p>Gerencie empréstimos, organize o acervo e conecte leitores da comunidade.</p>
+        </div>
+      </div>
+      <div class="user-chip">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <span class="name">Usuário Demo</span>
+          <span class="role">Leitor & Administrador</span>
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <div class="tabs">
+        <button class="tab-btn active" data-view="catalogo">
+          <span class="dot"></span>
+          Catálogo
+        </button>
+        <button class="tab-btn" data-view="emprestimos">
+          <span class="dot"></span>
+          Meus empréstimos
+        </button>
+        <button class="tab-btn" data-view="admin">
+          <span class="dot"></span>
+          Admin
+        </button>
+      </div>
+      <div class="quick-stats">
+        <span id="stat-total">Total: 0</span>
+        <span id="stat-disponiveis">Disponíveis: 0</span>
+        <span id="stat-emprestados">Emprestados: 0</span>
+      </div>
+    </nav>
+
+    <main>
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <div class="search-box">
+          <span style="font-size:12px;opacity:0.8;">🔍</span>
+          <input id="search-input" type="text" placeholder="Buscar por título ou autor..." />
+        </div>
+        <select id="filtro-status" class="filter-select">
+          <option value="todos">Todos os status</option>
+          <option value="disponivel">Só disponíveis</option>
+          <option value="emprestado">Só emprestados</option>
+        </select>
+        <button class="primary-btn" id="btn-adicionar-demo">
+          ➕ Adicionar livro demo
+        </button>
+      </div>
+
+      <!-- VIEW: CATÁLOGO -->
+      <section id="view-catalogo" class="view active">
+        <div class="grid" id="catalogo-grid">
+          <!-- Cards gerados via JS -->
+        </div>
+      </section>
+
+      <!-- VIEW: MEUS EMPRÉSTIMOS -->
+      <section id="view-emprestimos" class="view">
+        <div id="lista-emprestimos"></div>
+      </section>
+
+      <!-- VIEW: ADMIN -->
+      <section id="view-admin" class="view">
+        <div class="empty-state">
+          <strong>Painel administrativo (demo)</strong>
+          <span>Aqui você poderá gerenciar o acervo completo, ver fila de espera, histórico de empréstimos e usuários da comunidade.</span>
+        </div>
+        <table id="admin-tabela">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Categoria</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Linhas geradas via JS -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Dados de exemplo
+    let livros = [
+      {
+        id: 1,
+        titulo: "O Pequeno Príncipe",
+        autor: "Antoine de Saint-Exupéry",
+        categoria: "Infantil",
+        status: "disponivel",
+        ano: 1943
+      },
+      {
+        id: 2,
+        titulo: "Dom Casmurro",
+        autor: "Machado de Assis",
+        categoria: "Romance",
+        status: "emprestado",
+        ano: 1899,
+        emprestadoPara: "Usuário Demo"
+      },
+      {
+        id: 3,
+        titulo: "Introdução à Programação",
+        autor: "Vários",
+        categoria: "Tecnologia",
+        status: "disponivel",
+        ano: 2020
+      }
+    ];
+
+    const usuarioAtual = "Usuário Demo";
+
+    // ELEMENTOS
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const views = {
+      catalogo: document.getElementById("view-catalogo"),
+      emprestimos: document.getElementById("view-emprestimos"),
+      admin: document.getElementById("view-admin")
+    };
+    const catalogoGrid = document.getElementById("catalogo-grid");
+    const listaEmprestimos = document.getElementById("lista-emprestimos");
+    const adminTabelaBody = document.querySelector("#admin-tabela tbody");
+    const searchInput = document.getElementById("search-input");
+    const filtroStatus = document.getElementById("filtro-status");
+    const btnAdicionarDemo = document.getElementById("btn-adicionar-demo");
+
+    const statTotal = document.getElementById("stat-total");
+    const statDisponiveis = document.getElementById("stat-disponiveis");
+    const statEmprestados = document.getElementById("stat-emprestados");
+
+    // Troca de abas
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const viewName = btn.dataset.view;
+        Object.keys(views).forEach((key) => {
+          views[key].classList.toggle("active", key === viewName);
+        });
+
+        // Atualiza conteúdo específico se necessário
+        if (viewName === "emprestimos") {
+          renderEmprestimos();
+        } else if (viewName === "admin") {
+          renderAdmin();
+        }
+      });
+    });
+
+    // Renderização do catálogo
+    function renderCatalogo() {
+      const termo = searchInput.value.trim().toLowerCase();
+      const filtro = filtroStatus.value;
+
+      const filtrados = livros.filter((livro) => {
+        const matchTexto =
+          livro.titulo.toLowerCase().includes(termo) ||
+          livro.autor.toLowerCase().includes(termo);
+
+        const matchStatus =
+          filtro === "todos" ? true : livro.status === filtro;
+
+        return matchTexto && matchStatus;
+      });
+
+      catalogoGrid.innerHTML = "";
+
+      if (filtrados.length === 0) {
+        catalogoGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>Nenhum livro encontrado</strong>
+            <span>Tente alterar o termo de busca ou o filtro de status.</span>
+          </div>
+        `;
+        return;
+      }
+
+      filtrados.forEach((livro) => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        const statusClass =
+          livro.status === "disponivel" ? "disponivel" : "emprestado";
+        const statusLabel =
+          livro.status === "disponivel" ? "Disponível" : "Emprestado";
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-title">${livro.titulo}</div>
+              <div class="card-author">${livro.autor}</div>
+            </div>
+            <span class="badge-status ${statusClass}">
+              ${statusLabel}
+            </span>
+          </div>
+          <div class="card-footer">
+            <div class="meta">
+              <span><strong>Categoria:</strong> ${livro.categoria}</span>
+              <span><strong>Ano:</strong> ${livro.ano ?? "-"}</span>
+            </div>
+            ${
+              livro.status === "disponivel"
+                ? `<button class="btn-emprestar" data-id="${livro.id}">Emprestar</button>`
+                : `<button class="btn-devolver" data-id="${livro.id}">Devolver</button>`
+            }
+          </div>
+        `;
+
+        catalogoGrid.appendChild(card);
+      });
+    }
+
+    // Delegação de eventos para botões de emprestar/devolver
+    catalogoGrid.addEventListener("click", (event) => {
+      const btn = event.target;
+      const id = btn.dataset.id ? Number(btn.dataset.id) : null;
+      if (!id) return;
+
+      const livro = livros.find((l) => l.id === id);
+      if (!livro) return;
+
+      if (btn.classList.contains("btn-emprestar")) {
+        livro.status = "emprestado";
+        livro.emprestadoPara = usuarioAtual;
+      } else if (btn.classList.contains("btn-devolver")) {
+        livro.status = "disponivel";
+        delete livro.emprestadoPara;
+      }
+
+      atualizarStats();
+      renderCatalogo();
+      renderEmprestimos();
+      renderAdmin();
+    });
+
+    // Renderização dos empréstimos do usuário
+    function renderEmprestimos() {
+      const meus = livros.filter(
+        (livro) =>
+          livro.status === "emprestado" &&
+          livro.emprestadoPara === usuarioAtual
+      );
+
+      listaEmprestimos.innerHTML = "";
+
+      if (meus.length === 0) {
+        listaEmprestimos.innerHTML = `
+          <div class="empty-state">
+            <strong>Você não possui empréstimos ativos.</strong>
+            <span>Explore o catálogo para pegar emprestado livros da comunidade.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "grid";
+
+      meus.forEach((livro) => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-title">${livro.titulo}</div>
+              <div class="card-author">${livro.autor}</div>
+            </div>
+            <span class="badge-status emprestado">
+              Emprestado
+            </span>
+          </div>
+          <div class="card-footer">
+            <div class="meta">
+              <span><strong>Categoria:</strong> ${livro.categoria}</span>
+              <span><strong>Para:</strong> ${livro.emprestadoPara}</span>
+            </div>
+            <button class="btn-devolver" data-id="${livro.id}">Devolver</button>
+          </div>
+        `;
+
+        wrapper.appendChild(card);
+      });
+
+      listaEmprestimos.appendChild(wrapper);
+    }
+
+    // Delegação na área de empréstimos (devolver)
+    listaEmprestimos.addEventListener("click", (event) => {
+      const btn = event.target;
+      const id = btn.dataset.id ? Number(btn.dataset.id) : null;
+      if (!id) return;
+
+      const livro = livros.find((l) => l.id === id);
+      if (!livro) return;
+
+      if (btn.classList.contains("btn-devolver")) {
+        livro.status = "disponivel";
+        delete livro.emprestadoPara;
+        atualizarStats();
+        renderCatalogo();
+        renderEmprestimos();
+        renderAdmin();
+      }
+    });
+
+    // Renderização admin
+    function renderAdmin() {
+      adminTabelaBody.innerHTML = "";
+
+      livros.forEach((livro) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${livro.titulo}</td>
+          <td>${livro.autor}</td>
+          <td><span class="tag categoria">${livro.categoria}</span></td>
+          <td>
+            <span class="tag ${
+              livro.status === "disponivel" ? "comunidade" : "categoria"
+            }">
+              ${livro.status === "disponivel" ? "Disponível" : "Emprestado"}
+            </span>
+          </td>
+        `;
+        adminTabelaBody.appendChild(tr);
+      });
+    }
+
+    // Estatísticas rápidas
+    function atualizarStats() {
+      const total = livros.length;
+      const disponiveis = livros.filter((l) => l.status === "disponivel").length;
+      const emprestados = livros.filter(
+        (l) => l.status === "emprestado"
+      ).length;
+
+      statTotal.textContent = `Total: ${total}`;
+      statDisponiveis.textContent = `Disponíveis: ${disponiveis}`;
+      statEmprestados.textContent = `Emprestados: ${emprestados}`;
+    }
+
+    // Filtros
+    searchInput.addEventListener("input", renderCatalogo);
+    filtroStatus.addEventListener("change", renderCatalogo);
+
+    // Botão de adicionar livro demo
+    btnAdicionarDemo.addEventListener("click", () => {
+      const novoId =
+        livros.length === 0 ? 1 : Math.max(...livros.map((l) => l.id)) + 1;
+
+      livros.push({
+        id: novoId,
+        titulo: "Livro Demo " + novoId,
+        autor: "Autor Comunidade",
+        categoria: "Doação",
+        status: "disponivel",
+        ano: 2025
+      });
+
+      atualizarStats();
+      renderCatalogo();
+      renderAdmin();
+    });
+
+    // Inicialização
+    atualizarStats();
+    renderCatalogo();
+    renderEmprestimos();
+    renderAdmin();
+  </script>
+</body>
+</html>
