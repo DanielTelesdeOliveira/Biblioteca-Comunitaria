@@ -1,5 +1,6 @@
 package onlineBiblioteca.biblioteca.service;
 
+import onlineBiblioteca.biblioteca.dto.Genero.GeneroResponseDTO;
 import onlineBiblioteca.biblioteca.dto.Livro.LivroResponseDTO;
 import onlineBiblioteca.biblioteca.exception.Livro.LivroNaoEncontradoException;
 import onlineBiblioteca.biblioteca.model.Genero;
@@ -73,22 +74,25 @@ public class LivroService {
         livroRepository.delete(livro);    
     }
 
-    public void deletarLivro(Long livroId){
-        Livro livro = livroRepository.findById(livroId)
-            .orElseThrow(()->new LivroNaoEncontradoException(livroId));
-
-            livroRepository.delete(livro);
-    }
-    
-
     public LivroResponseDTO toDTO(Livro livro){
           LivroResponseDTO dto = new LivroResponseDTO();
           dto.setId(livro.getId());
           dto.setTitulo(livro.getTitulo());
           dto.setAutor(livro.getAutor());
           dto.setCategoria(livro.getCategoria());
-          dto.setGenero(livro.getGenero());
+          dto.setGenero(generoToDTO(livro.getGenero()));
           return dto;
+    }
+
+    public GeneroResponseDTO generoToDTO(Genero genero) {
+        if (genero == null) return null;
+    
+        GeneroResponseDTO dto = new GeneroResponseDTO();
+
+        dto.setId(genero.getId());
+        dto.setNome(genero.getNome());
+        
+        return dto;
     }
 
 }

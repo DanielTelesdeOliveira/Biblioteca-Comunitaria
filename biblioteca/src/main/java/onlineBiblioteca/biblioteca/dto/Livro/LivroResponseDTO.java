@@ -1,5 +1,6 @@
 package onlineBiblioteca.biblioteca.dto.Livro;
 
+import onlineBiblioteca.biblioteca.dto.Genero.GeneroResponseDTO;
 import onlineBiblioteca.biblioteca.model.Genero;
 
 public class LivroResponseDTO {
@@ -7,7 +8,7 @@ public class LivroResponseDTO {
     private String titulo;
     private String autor;
     private String categoria;
-    private Genero genero;
+    private GeneroResponseDTO genero;
 
     public LivroResponseDTO(){}
 
@@ -35,10 +36,10 @@ public class LivroResponseDTO {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
-    public Genero getGenero() {
+    public GeneroResponseDTO getGenero() {
         return genero;
     }
-    public void setGenero(Genero genero) {
+    public void setGenero(GeneroResponseDTO genero) {
         this.genero = genero;
     }
 
