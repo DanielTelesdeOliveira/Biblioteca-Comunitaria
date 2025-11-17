@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca Comunitária - Início</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Biblioteca Comunitária</h1>
+        <small>Projeto online • Java / Spring</small>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" href="home.html">Início</a>
+      <a class="nav-link" href="consulta.html">Consultar livros</a>
+      <a class="nav-link" href="cadastro-livro.html">Cadastrar livro</a>
+      <a class="nav-link primary" href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Bem-vindo(a) à Biblioteca Comunitária Online</div>
+          <div class="card-subtitle">
+            Use o menu para fazer login, cadastrar livros ou consultar o acervo.
+          </div>
+        </div>
+        <span class="pill green">Status: Online</span>
+      </div>
+      <p class="helper-text">
+        Fluxo sugerido:
+      </p>
+      <ul class="helper-text" style="margin-top:4px; padding-left:16px;">
+        <li>1. Login em <strong>Login</strong>;</li>
+        <li>2. Cadastro em <strong>Cadastrar livro</strong>;</li>
+        <li>3. Consulta em <strong>Consultar livros</strong>;</li>
+        <li>4. Clique em um livro para detalhes e empréstimo.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Resumo do acervo</div>
+          <div class="card-subtitle">
+            Dados calculados com base em <code>GET /livros/lista</code>.
+          </div>
+        </div>
+        <span class="pill">Acervo</span>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Total de livros</div>
+          <div class="stat-value" id="statTotalLivros">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Disponíveis</div>
+          <div class="stat-value" id="statLivrosDisp">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Indisponíveis</div>
+          <div class="stat-value" id="statLivrosIndisp">0</div>
+        </div>
+      </div>
+      <p class="helper-text">
+        A disponibilidade aqui é só uma simulação (por enquanto), usando apenas o acervo.
+      </p>
+    </section>
+  </main>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8080";
+
+  // Como o LivroResponseDTO não tem campo "disponivel",
+  // por enquanto consideramos todos disponíveis (até existir lógica com empréstimos).
+  function livroDisponivel(l) {
+    return true;
+  }
+
+  async function carregarResumo() {
+    try {
+      const resp = await fetch(API_BASE + "/livros/lista");
+      if (!resp.ok) throw new Error("Erro ao buscar livros");
+      const livros = await resp.json();
+      const total = livros.length;
+      const disp = livros.filter(livroDisponivel).length;
+      const indisp = total - disp;
+      document.getElementById("statTotalLivros").textContent = total;
+      document.getElementById("statLivrosDisp").textContent = disp;
+      document.getElementById("statLivrosIndisp").textContent = indisp;
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  carregarResumo();
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package onlineBiblioteca.biblioteca.service;
 
 import onlineBiblioteca.biblioteca.dto.Genero.GeneroResponseDTO;
 import onlineBiblioteca.biblioteca.dto.Livro.LivroResponseDTO;
+import onlineBiblioteca.biblioteca.exception.Genero.GeneroNaoEncontradoException;
 import onlineBiblioteca.biblioteca.exception.Livro.LivroNaoEncontradoException;
 import onlineBiblioteca.biblioteca.model.Genero;
 import onlineBiblioteca.biblioteca.model.Livro;
@@ -12,19 +13,26 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import onlineBiblioteca.biblioteca.repository.GeneroRepository;
+
 
 @Service
 public class LivroService {
 
     @Autowired
     private LivroRepository livroRepository;
+    private GeneroRepository generoRepository;
 
-    public LivroService(LivroRepository livroRepo){
+    public LivroService(LivroRepository livroRepo, GeneroRepository generoRepo){
         this.livroRepository = livroRepo; 
+        this.generoRepository = generoRepo; 
     }
 
-    public Livro criarLivro(String titulo, String autor, String categoria, Genero genero){
+    public Livro criarLivro(String titulo, String autor, String categoria, Long generoId){
         Livro novoLivro = new Livro();
+
+        Genero genero = generoRepository.findById(generoId)
+            .orElseThrow(()->new GeneroNaoEncontradoException(generoId));
 
         novoLivro.setTitulo(titulo);
         novoLivro.setAutor(autor);

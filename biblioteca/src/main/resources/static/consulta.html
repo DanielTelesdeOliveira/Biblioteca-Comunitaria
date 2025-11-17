@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca - Consulta de Livros</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Biblioteca Comunitária</h1>
+        <small>Consulta de livros</small>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" href="home.html">Início</a>
+      <a class="nav-link" href="consulta.html">Consultar livros</a>
+      <a class="nav-link" href="cadastro-livro.html">Cadastrar livro</a>
+      <a class="nav-link primary" href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Consulta de livros</div>
+          <div class="card-subtitle">
+            Usa <code>GET /livros/lista</code> (retornando <code>List&lt;LivroResponseDTO&gt;</code>) e filtra no front.
+          </div>
+        </div>
+        <span class="pill">Consulta</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="filtroTitulo">Filtrar por título</label>
+          <input id="filtroTitulo" type="text" placeholder="Ex.: Dom Casmurro" />
+        </div>
+        <div class="field-group">
+          <label for="filtroAutor">Filtrar por autor</label>
+          <input id="filtroAutor" type="text" placeholder="Ex.: Machado de Assis" />
+        </div>
+        <div class="field-group">
+          <label for="filtroStatus">Status (simulado)</label>
+          <select id="filtroStatus">
+            <option value="todos">Todos</option>
+            <option value="disponivel">Somente disponíveis</option>
+            <option value="indisponivel">Somente indisponíveis</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" type="button" id="btnLimpar">Limpar filtros</button>
+      </div>
+
+      <p class="helper-text">
+        Quando você implementar um <code>@GetMapping("/buscar")</code> com parâmetros, dá para adaptar a consulta para usar o backend direto.
+      </p>
+
+      <ul class="list" id="listaLivros"></ul>
+      <p class="helper-text" id="msgVazio" style="display:none;">Nenhum livro encontrado.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8080";
+  let livros = [];
+
+  function livroDisponivel(l) {
+    // por enquanto, como LivroResponseDTO não tem estado, tratamos tudo como disponível
+    return true;
+  }
+
+  function aplicarFiltros() {
+    const titulo = document.getElementById("filtroTitulo").value.trim().toLowerCase();
+    const autor = document.getElementById("filtroAutor").value.trim().toLowerCase();
+    const status = document.getElementById("filtroStatus").value;
+
+    let filtrados = livros.slice();
+
+    if (titulo) {
+      filtrados = filtrados.filter(l => (l.titulo || "").toLowerCase().includes(titulo));
+    }
+    if (autor) {
+      filtrados = filtrados.filter(l => (l.autor || "").toLowerCase().includes(autor));
+    }
+    if (status === "disponivel") {
+      filtrados = filtrados.filter(livroDisponivel);
+    } else if (status === "indisponivel") {
+      filtrados = filtrados.filter(l => !livroDisponivel(l));
+    }
+
+    renderLista(filtrados);
+  }
+
+  function renderLista(lista) {
+    const ul = document.getElementById("listaLivros");
+    const msgVazio = document.getElementById("msgVazio");
+    ul.innerHTML = "";
+
+    if (!lista.length) {
+      msgVazio.style.display = "block";
+      return;
+    }
+    msgVazio.style.display = "none";
+
+    lista.forEach(l => {
+      const li = document.createElement("li");
+      li.className = "book-item";
+      li.addEventListener("click", () => {
+        window.location.href = "detalhe-livro.html?id=" + encodeURIComponent(l.id);
+      });
+
+      const top = document.createElement("div");
+      top.className = "book-title-line";
+
+      const t = document.createElement("span");
+      t.className = "book-title";
+      t.textContent = l.titulo || "Sem título";
+
+      const pill = document.createElement("span");
+      pill.className = "pill " + (livroDisponivel(l) ? "green" : "red");
+      pill.textContent = livroDisponivel(l) ? "Disponível" : "Indisponível";
+
+      top.appendChild(t);
+      top.appendChild(pill);
+
+      const meta = document.createElement("div");
+      meta.className = "book-meta";
+      meta.textContent = [
+        l.autor ? "Autor: " + l.autor : null,
+        l.categoria ? "Categoria: " + l.categoria : null,
+        l.genero && l.genero.nome ? "Gênero: " + l.genero.nome : null
+      ].filter(Boolean).join(" • ");
+
+      li.appendChild(top);
+      li.appendChild(meta);
+      ul.appendChild(li);
+    });
+  }
+
+  async function carregarLivros() {
+    try {
+      const resp = await fetch(API_BASE + "/livros/lista");
+      if (!resp.ok) throw new Error("Erro ao buscar livros");
+      livros = await resp.json(); // List<LivroResponseDTO>
+      aplicarFiltros();
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  document.getElementById("filtroTitulo").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroAutor").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroStatus").addEventListener("change", aplicarFiltros);
+
+  document.getElementById("btnLimpar").addEventListener("click", () => {
+    document.getElementById("filtroTitulo").value = "";
+    document.getElementById("filtroAutor").value = "";
+    document.getElementById("filtroStatus").value = "todos";
+    aplicarFiltros();
+  });
+
+  carregarLivros();
+</script>
+</body>
+</html>

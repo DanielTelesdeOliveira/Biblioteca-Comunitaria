@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca - Cadastro de Livro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Biblioteca Comunitária</h1>
+        <small>Cadastro de livros</small>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" href="home.html">Início</a>
+      <a class="nav-link" href="consulta.html">Consultar livros</a>
+      <a class="nav-link" href="cadastro-livro.html">Cadastrar livro</a>
+      <a class="nav-link primary" href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Cadastrar novo livro</div>
+          <div class="card-subtitle">
+            Mapeado para <code>POST /livros/cadastro</code> com <code>LivroRequestDTO</code>.
+          </div>
+        </div>
+        <span class="pill">Cadastro</span>
+      </div>
+
+      <form id="formCadastro">
+        <div class="field-group">
+          <label for="titulo">Título</label>
+          <input id="titulo" type="text" required placeholder="Ex.: Dom Casmurro" />
+        </div>
+
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field-group">
+            <label for="autor">Autor</label>
+            <input id="autor" type="text" required placeholder="Ex.: Machado de Assis" />
+          </div>
+          <div class="field-group">
+            <label for="categoria">Categoria</label>
+            <input id="categoria" type="text" placeholder="Ex.: Infantil" />
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field-group">
+            <label for="genero">Gênero</label>
+            <!-- preenchido via GET /generos/lista (GeneroResponseDTO) -->
+            <select id="genero">
+              <option value="">Selecione um gênero</option>
+            </select>
+            <p class="helper-text">
+              Usa <code>GeneroResponseDTO (id, nome)</code> retornado em <code>/generos/lista</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Salvar livro</button>
+          <button class="btn btn-ghost" type="reset">Limpar</button>
+        </div>
+
+        <p id="msgCadastro" class="helper-text"></p>
+      </form>
+    </section>
+  </main>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8080";
+
+  async function carregarGeneros() {
+    const select = document.getElementById("genero");
+    try {
+      const resp = await fetch(API_BASE + "/generos/lista");
+      if (!resp.ok) throw new Error("Erro ao buscar generos");
+      const generos = await resp.json(); // List<GeneroResponseDTO>
+      generos.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = g.nome;
+        select.appendChild(opt);
+      });
+    } catch (e) {
+      console.warn(e);
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "Erro ao carregar gêneros";
+      select.appendChild(opt);
+    }
+  }
+
+  document.getElementById("formCadastro").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const msg = document.getElementById("msgCadastro");
+
+    const titulo = document.getElementById("titulo").value.trim();
+    const autor = document.getElementById("autor").value.trim();
+    const categoria = document.getElementById("categoria").value.trim();
+    const generoId = Number(document.getElementById("genero").value);
+
+    if (!titulo || !autor) {
+      msg.textContent = "Título e autor são obrigatórios.";
+      msg.classList.add("error-text");
+      return;
+    }
+
+    // LivroRequestDTO
+    const livroReq = {
+      titulo,
+      autor,
+      categoria,
+      generoId
+    };
+
+    try {
+      const resp = await fetch(API_BASE + "/livros/cadastro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(livroReq)
+      });
+      if (!resp.ok) throw new Error("Erro ao salvar no backend");
+
+      const salvo = await resp.json(); // LivroResponseDTO
+      console.log("Livro salvo:", salvo);
+
+      msg.textContent = "Livro cadastrado com sucesso (backend OK).";
+      msg.classList.remove("error-text");
+      (this).reset();
+      document.getElementById("genero").value = "";
+    } catch (e) {
+      console.warn(e);
+      msg.textContent = "Backend não respondeu. Cadastro não foi persistido.";
+      msg.classList.add("error-text");
+    }
+  });
+
+  carregarGeneros();
+</script>
+</body>
+</html>

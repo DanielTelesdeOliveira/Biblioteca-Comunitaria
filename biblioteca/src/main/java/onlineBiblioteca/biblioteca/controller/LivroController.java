@@ -1,5 +1,6 @@
 package onlineBiblioteca.biblioteca.controller;
 
+import onlineBiblioteca.biblioteca.dto.Livro.LivroRequestDTO;
 import onlineBiblioteca.biblioteca.dto.Livro.LivroResponseDTO;
 import onlineBiblioteca.biblioteca.model.Livro;
 import onlineBiblioteca.biblioteca.service.LivroService;
@@ -18,12 +19,13 @@ public class LivroController {
     private LivroService livroService;
 
     @PostMapping("/cadastro")
-    public ResponseEntity<LivroResponseDTO> cadastrarLivro(@RequestBody Livro livro) {
-       Livro criado = livroService.criarLivro(
+    public ResponseEntity<LivroResponseDTO> cadastrarLivro(@RequestBody LivroRequestDTO livro) {
+       Livro criado;
+        criado = livroService.criarLivro(
                 livro.getTitulo(),
                 livro.getAutor(),
                 livro.getCategoria(),
-                livro.getGenero()
+                livro.getGeneroId()
         );
         
         return ResponseEntity.ok(livroService.toDTO(criado));

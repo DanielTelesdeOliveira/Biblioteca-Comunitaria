@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca Comunitária - Login</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Biblioteca Comunitária</h1>
+        <small>Autenticação de usuário (simulada)</small>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" href="home.html">Início</a>
+      <a class="nav-link" href="consulta.html">Consultar livros</a>
+      <a class="nav-link" href="cadastro-livro.html">Cadastrar livro</a>
+      <a class="nav-link primary" href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Login</div>
+          <div class="card-subtitle">
+            No backend ainda não há endpoints em <code>UsuarioController</code>, então isto é apenas uma simulação.
+          </div>
+        </div>
+        <span class="pill">Usuário</span>
+      </div>
+
+      <form id="formLogin">
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="nome">Nome</label>
+            <input id="nome" type="text" placeholder="Seu nome completo" required />
+          </div>
+          <div class="field-group">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" placeholder="seuemail@exemplo.com" required />
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top:10px;">
+          <label for="senha">Senha</label>
+          <input id="senha" type="password" placeholder="Senha de acesso" required />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Entrar</button>
+        </div>
+
+        <p class="helper-text" id="msgLogin"></p>
+      </form>
+    </section>
+  </main>
+</div>
+
+<script>
+  document.getElementById("formLogin").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const nome = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const msg = document.getElementById("msgLogin");
+
+    if (!nome || !email) return;
+
+    msg.textContent = "Login simulado no front. Quando você criar endpoints em UsuarioController, é só trocar a chamada aqui.";
+  });
+</script>
+</body>
+</html>

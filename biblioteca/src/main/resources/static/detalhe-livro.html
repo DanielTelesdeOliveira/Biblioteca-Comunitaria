@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca - Detalhes do Livro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Biblioteca Comunitária</h1>
+        <small>Detalhes do livro</small>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" href="home.html">Início</a>
+      <a class="nav-link" href="consulta.html">Consultar livros</a>
+      <a class="nav-link" href="cadastro-livro.html">Cadastrar livro</a>
+      <a class="nav-link primary" href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="detTitulo">Carregando...</div>
+          <div class="card-subtitle" id="detSubtitulo"></div>
+        </div>
+        <span class="pill" id="detStatusPill">-</span>
+      </div>
+
+      <p class="helper-text" id="detId"></p>
+
+      <div class="form-grid" style="margin-top:10px;">
+        <div class="field-group">
+          <label>Autor</label>
+          <input id="detAutor" disabled />
+        </div>
+        <div class="field-group">
+          <label>Categoria</label>
+          <input id="detCategoria" disabled />
+        </div>
+        <div class="field-group">
+          <label>Gênero</label>
+          <input id="detGenero" disabled />
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn btn-primary" type="button" id="btnEmprestimo">Pedir empréstimo</button>
+        <a class="btn btn-ghost" href="consulta.html">Voltar à consulta</a>
+      </div>
+
+      <p class="helper-text" id="msgEmprestimo"></p>
+      <p class="helper-text">
+        Quando você implementar <code>EmprestimoController</code> (ex.: <code>POST /emprestimos</code>),
+        basta chamar o endpoint aqui passando o <code>livro.id</code> e o usuário logado.
+      </p>
+    </section>
+  </main>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8080";
+  let livro = null;
+
+  function livroDisponivel(l) {
+    // por enquanto, assumimos sempre disponível
+    return true;
+  }
+
+  function getIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+  }
+
+  async function carregarLivro() {
+    const id = getIdFromUrl();
+    if (!id) {
+      document.getElementById("detTitulo").textContent = "Livro não informado";
+      return;
+    }
+
+    try {
+      const resp = await fetch(API_BASE + "/livros/" + encodeURIComponent(id));
+      if (!resp.ok) throw new Error("Erro ao buscar livro");
+      livro = await resp.json(); // LivroResponseDTO
+
+      document.getElementById("detTitulo").textContent = livro.titulo || "Sem título";
+      document.getElementById("detSubtitulo").textContent = livro.autor
+        ? "por " + livro.autor
+        : "Autor não informado";
+      document.getElementById("detId").textContent = "ID: " + (livro.id ?? "-");
+
+      document.getElementById("detAutor").value = livro.autor || "";
+      document.getElementById("detCategoria").value = livro.categoria || "";
+      document.getElementById("detGenero").value =
+        (livro.genero && livro.genero.nome) || "";
+
+      const pill = document.getElementById("detStatusPill");
+      if (livroDisponivel(livro)) {
+        pill.textContent = "Disponível";
+        pill.classList.add("green");
+      } else {
+        pill.textContent = "Indisponível";
+        pill.classList.add("red");
+      }
+    } catch (e) {
+      console.warn(e);
+      document.getElementById("detTitulo").textContent = "Erro ao carregar livro";
+    }
+  }
+
+  document.getElementById("btnEmprestimo").addEventListener("click", async function () {
+    const msg = document.getElementById("msgEmprestimo");
+    if (!livro) return;
+
+    if (!livroDisponivel(livro)) {
+      msg.textContent = "Livro indisponível no acervo. Tente outro título.";
+      msg.classList.add("error-text");
+      return;
+    }
+
+    // FUTURO: criar EmprestimoController e chamar algo como:
+    // POST /emprestimos { livroId: livro.id, usuarioId: ... }
+    msg.textContent = "Pedido de empréstimo simulado no front. Integre com EmprestimoController depois.";
+    msg.classList.remove("error-text");
+  });
+
+  carregarLivro();
+</script>
+</body>
+</html>
