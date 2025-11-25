@@ -4,7 +4,14 @@
   <meta charset="UTF-8" />
   <title>Biblioteca - Detalhes do Livro</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .disabled {
+      opacity: 0.5;
+      cursor: not-allowed !important;
+    }
+  </style>
 </head>
+
 <body>
 <div class="container">
   <header>
@@ -37,98 +44,223 @@
 
       <div class="form-grid" style="margin-top:10px;">
         <div class="field-group">
-          <label>Autor</label>
-          <input id="detAutor" disabled />
+          <label for="inpTitulo">Título</label>
+          <input id="inpTitulo" disabled />
         </div>
+
         <div class="field-group">
-          <label>Categoria</label>
-          <input id="detCategoria" disabled />
+          <label for="inpAutor">Autor</label>
+          <input id="inpAutor" disabled />
         </div>
+
         <div class="field-group">
-          <label>Gênero</label>
-          <input id="detGenero" disabled />
+          <label for="inpCategoria">Categoria</label>
+          <input id="inpCategoria" disabled />
         </div>
+      </div>
+
+      <div class="field-group" style="margin-top:10px;">
+        <label for="inpGenero">Gênero</label>
+        <select id="inpGenero" disabled>
+          <option>Carregando...</option>
+        </select>
       </div>
 
       <div class="btn-row" style="margin-top:10px;">
-        <button class="btn btn-primary" type="button" id="btnEmprestimo">Pedir empréstimo</button>
+        <button class="btn btn-primary" id="btnEmprestimo">Pedir empréstimo</button>
+        <button class="btn btn-ghost" id="btnAtualizar">Atualizar dados</button>
+        <button class="btn btn-ghost" id="btnRemover">Remover livro</button>
         <a class="btn btn-ghost" href="consulta.html">Voltar à consulta</a>
       </div>
 
-      <p class="helper-text" id="msgEmprestimo"></p>
-      <p class="helper-text">
-        Quando você implementar <code>EmprestimoController</code> (ex.: <code>POST /emprestimos</code>),
-        basta chamar o endpoint aqui passando o <code>livro.id</code> e o usuário logado.
-      </p>
+      <p id="msgEmprestimo" class="helper-text"></p>
+      <p id="msgAtualizar" class="helper-text"></p>
+      <p id="msgRemover" class="helper-text error-text"></p>
     </section>
   </main>
 </div>
 
 <script>
   const API_BASE = "http://localhost:8080";
-  let livro = null;
 
-  function livroDisponivel(l) {
-    // por enquanto, assumimos sempre disponível
-    return true;
+  let livro = null;
+  let modoEdicao = false;
+
+  const btnEmprestimo = document.getElementById("btnEmprestimo");
+  const msgEmprestimo = document.getElementById("msgEmprestimo");
+
+  btnEmprestimo.addEventListener("click", () =>{
+      limparMensagem();
+      msgEmprestimo.textContent = "Simulação de emprestimo Completa!";
+      msgEmprestimo.classList.remove("error-text");
+  })
+
+  function bloquearCampos() {
+    inpTitulo.disabled = true;
+    inpAutor.disabled = true;
+    inpCategoria.disabled = true;
+    inpGenero.disabled = true;
   }
 
+  function liberarCampos() {
+    inpTitulo.disabled = false;
+    inpAutor.disabled = false;
+    inpCategoria.disabled = false;
+    inpGenero.disabled = false;
+  }
+
+  function limparMensagem() {
+    msgEmprestimo.textContent = "";
+    msgAtualizar.textContent = "";
+  }
+
+  bloquearCampos();
+
   function getIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
+    return new URLSearchParams(window.location.search).get("id");
+  }
+
+  async function carregarGenerosSelect() {
+    const sel = document.getElementById("inpGenero");
+    sel.innerHTML = "<option>Carregando...</option>";
+
+    try {
+      const resp = await fetch(API_BASE + "/generos/lista");
+      if (!resp.ok) throw new Error();
+
+      const generos = await resp.json();
+      sel.innerHTML = "<option value=''>Selecione um gênero</option>";
+
+      generos.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = g.nome;
+        sel.appendChild(opt);
+      });
+
+      if (livro?.genero?.id) sel.value = livro.genero.id;
+
+    } catch (e) {
+      sel.innerHTML = "<option value=''>Erro ao carregar gêneros</option>";
+    }
   }
 
   async function carregarLivro() {
     const id = getIdFromUrl();
-    if (!id) {
-      document.getElementById("detTitulo").textContent = "Livro não informado";
-      return;
-    }
+    if (!id) return;
 
     try {
-      const resp = await fetch(API_BASE + "/livros/" + encodeURIComponent(id));
-      if (!resp.ok) throw new Error("Erro ao buscar livro");
-      livro = await resp.json(); // LivroResponseDTO
+      const resp = await fetch(API_BASE + "/livros/" + id);
+      if (!resp.ok) throw new Error();
 
-      document.getElementById("detTitulo").textContent = livro.titulo || "Sem título";
-      document.getElementById("detSubtitulo").textContent = livro.autor
-        ? "por " + livro.autor
-        : "Autor não informado";
-      document.getElementById("detId").textContent = "ID: " + (livro.id ?? "-");
+      livro = await resp.json();
 
-      document.getElementById("detAutor").value = livro.autor || "";
-      document.getElementById("detCategoria").value = livro.categoria || "";
-      document.getElementById("detGenero").value =
-        (livro.genero && livro.genero.nome) || "";
+      detTitulo.textContent = livro.titulo;
+      detSubtitulo.textContent = livro.autor ? "por " + livro.autor : "";
+      detId.textContent = "ID: " + livro.id;
 
-      const pill = document.getElementById("detStatusPill");
-      if (livroDisponivel(livro)) {
-        pill.textContent = "Disponível";
-        pill.classList.add("green");
-      } else {
-        pill.textContent = "Indisponível";
-        pill.classList.add("red");
-      }
+      inpTitulo.value = livro.titulo;
+      inpAutor.value = livro.autor;
+      inpCategoria.value = livro.categoria ?? "";
+
+      await carregarGenerosSelect();
+
+      detStatusPill.textContent = "Disponível";
+      detStatusPill.classList.add("green");
+
     } catch (e) {
-      console.warn(e);
-      document.getElementById("detTitulo").textContent = "Erro ao carregar livro";
+      detTitulo.textContent = "Erro ao carregar livro";
     }
   }
 
-  document.getElementById("btnEmprestimo").addEventListener("click", async function () {
-    const msg = document.getElementById("msgEmprestimo");
-    if (!livro) return;
+  async function salvarAlteracoesLivro() {
+    const msg = msgAtualizar;
+    msg.textContent = "";
 
-    if (!livroDisponivel(livro)) {
-      msg.textContent = "Livro indisponível no acervo. Tente outro título.";
+    const novoTitulo = inpTitulo.value.trim();
+    const novoAutor = inpAutor.value.trim();
+    const novaCategoria = inpCategoria.value.trim();
+    const novoGeneroId = inpGenero.value;
+
+    if (!novoTitulo || !novoAutor) {
+      msg.textContent = "Título e autor são obrigatórios.";
       msg.classList.add("error-text");
       return;
     }
 
-    // FUTURO: criar EmprestimoController e chamar algo como:
-    // POST /emprestimos { livroId: livro.id, usuarioId: ... }
-    msg.textContent = "Pedido de empréstimo simulado no front. Integre com EmprestimoController depois.";
-    msg.classList.remove("error-text");
+    const livroReq = {
+      titulo: novoTitulo,
+      autor: novoAutor,
+      categoria: novaCategoria,
+      genero: { id: Number(novoGeneroId) }
+    };
+
+    try {
+      const resp = await fetch(`${API_BASE}/livros/atualizar/${livro.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(livroReq)
+      });
+
+      if (!resp.ok) throw new Error();
+
+      livro = await resp.json();
+
+      bloquearCampos();
+      modoEdicao = false;
+      btnAtualizar.textContent = "Atualizar dados";
+
+
+      btnEmprestimo.disabled = false;
+      btnEmprestimo.classList.remove("disabled");
+      btnRemover.disabled = false;
+      btnRemover.classList.remove("disabled");
+
+      msg.classList.remove("error-text");
+      msg.textContent = "Livro atualizado com sucesso!";
+    } catch (e) {
+      msg.textContent = "Erro ao atualizar livro.";
+      msg.classList.add("error-text");
+    }
+  }
+
+  btnAtualizar.addEventListener("click", () => {
+    limparMensagem();
+    if (!modoEdicao) {
+      modoEdicao = true;
+      liberarCampos();
+      carregarGenerosSelect();
+      btnAtualizar.textContent = "Salvar alterações";
+
+      
+      btnEmprestimo.disabled = true;
+      btnEmprestimo.classList.add("disabled");
+      btnRemover.disabled = true;
+      btnRemover.classList.add("disabled");
+
+      return;
+    }
+
+    salvarAlteracoesLivro();
+  });
+
+  btnRemover.addEventListener("click", async () => {
+    limparMensagem();
+    if (!confirm("Deseja realmente remover este livro?")) return;
+
+    try {
+      const resp = await fetch(`${API_BASE}/livros/delete/${livro.id}`, {
+        method: "DELETE"
+      });
+
+      if (!resp.ok) throw new Error();
+
+      alert("Livro removido!");
+      window.location.href = "consulta.html";
+
+    } catch (e) {
+      msgRemover.textContent = "Erro ao remover livro.";
+    }
   });
 
   carregarLivro();

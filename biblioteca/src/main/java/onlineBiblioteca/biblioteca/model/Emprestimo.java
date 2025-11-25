@@ -28,7 +28,7 @@ public class Emprestimo{
     @Column(name="Multa_Emprestimo", nullable=true)
     private double multa;
 
-    //boolean finalizado ou devolvido (?)
+    //boolean devolvido 
     //Long id usuario -- chave estrangeira para ver quem esta com o livro
 
     public Emprestimo(){}
